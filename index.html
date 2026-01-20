@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Planner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="date-nav">
+                <button id="prev-day" class="nav-btn">&larr;</button>
+                <div class="current-date">
+                    <h1 id="day-name">Monday</h1>
+                    <p id="full-date">January 19, 2026</p>
+                </div>
+                <button id="next-day" class="nav-btn">&rarr;</button>
+            </div>
+            <div class="header-actions">
+                <div class="view-toggle">
+                    <button id="day-view-btn" class="view-btn active">Day</button>
+                    <button id="week-view-btn" class="view-btn">Week</button>
+                </div>
+                <button id="today-btn" class="today-btn">Today</button>
+                <button id="briefing-btn" class="briefing-btn" title="Morning Briefing">Briefing</button>
+            </div>
+        </header>
+
+        <!-- Progress Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <div class="dashboard-card focus-card">
+                <h4>Suggested Focus</h4>
+                <div id="focus-item" class="focus-item">Loading...</div>
+            </div>
+            <div class="dashboard-card">
+                <h4>Today's Progress</h4>
+                <div class="progress-ring-container">
+                    <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-bg" cx="30" cy="30" r="25"></circle>
+                        <circle id="progress-circle" class="progress-ring-fill" cx="30" cy="30" r="25"></circle>
+                    </svg>
+                    <span id="progress-text" class="progress-text">0%</span>
+                </div>
+                <p id="completion-stats">0/0 completed</p>
+            </div>
+            <div class="dashboard-card">
+                <h4>Upcoming</h4>
+                <div id="deadline-counts" class="deadline-counts">
+                    <span class="count-item"><strong id="due-today">0</strong> today</span>
+                    <span class="count-item"><strong id="due-week">0</strong> this week</span>
+                    <span class="count-item overdue"><strong id="overdue-count">0</strong> overdue</span>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <h4>By Course</h4>
+                <div id="course-counts" class="course-counts"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel - Daily Schedule -->
+            <section class="schedule-panel">
+                <!-- Day View -->
+                <div id="day-view">
+                    <div class="panel-header">
+                        <h2>Today's Schedule</h2>
+                        <span id="task-count" class="task-count">0 items</span>
+                    </div>
+
+                    <!-- Wake Up Time Display -->
+                    <div id="wake-up-display" class="wake-up-card hidden">
+                        <span class="wake-icon">&#9728;</span>
+                        <span id="wake-time-text">Wake up at 7:00 AM</span>
+                    </div>
+
+                    <!-- Timeline View -->
+                    <div id="timeline" class="timeline">
+                        <!-- Items will be dynamically inserted here -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="empty-state">
+                        <p>No tasks scheduled for today</p>
+                        <p class="hint">Add assignments, projects, or set up your routines</p>
+                    </div>
+                </div>
+
+                <!-- Week View -->
+                <div id="week-view" class="week-view hidden">
+                    <div class="panel-header">
+                        <h2 id="week-title">Week View</h2>
+                    </div>
+                    <div id="week-grid" class="week-grid">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel - Controls -->
+            <aside class="control-panel">
+                <!-- Tab Navigation -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="routines">Routines</button>
+                    <button class="tab-btn" data-tab="study">Study</button>
+                    <button class="tab-btn" data-tab="syllabus">Syllabus</button>
+                    <button class="tab-btn" data-tab="projects">Projects</button>
+                    <button class="tab-btn" data-tab="upcoming">Upcoming</button>
+                </div>
+
+                <!-- Routines Tab -->
+                <div id="routines-tab" class="tab-content active">
+                    <h3>Daily Routines</h3>
+
+                    <div class="form-group">
+                        <label for="wake-time">Wake Up Time</label>
+                        <input type="time" id="wake-time" value="07:00">
+                        <button id="save-wake-time" class="btn btn-small">Save</button>
+                    </div>
+
+                    <div class="routine-section">
+                        <h4>Workout Schedule</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="workout-mon" checked> Monday</label>
+                            <label><input type="checkbox" id="workout-wed" checked> Wednesday</label>
+                            <label><input type="checkbox" id="workout-fri" checked> Friday</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="workout-time">Workout Time</label>
+                            <input type="time" id="workout-time" value="08:00">
+                        </div>
+                        <button id="save-workout" class="btn btn-small">Save Workout</button>
+                    </div>
+
+                    <div class="routine-section">
+                        <h4>Tennis</h4>
+                        <div class="form-group">
+                            <label for="tennis-time">Thursday Tennis Time</label>
+                            <input type="time" id="tennis-time" value="18:00">
+                        </div>
+                        <button id="save-tennis" class="btn btn-small">Save Tennis</button>
+                    </div>
+
+                    <div class="routine-section">
+                        <h4>Notifications</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="notif-enabled"> Enable notifications</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder-time">Default reminder</label>
+                            <select id="reminder-time">
+                                <option value="60">1 hour before</option>
+                                <option value="180">3 hours before</option>
+                                <option value="1440" selected>1 day before</option>
+                                <option value="2880">2 days before</option>
+                            </select>
+                        </div>
+                        <button id="save-notifications" class="btn btn-small">Save Notifications</button>
+                        <button id="test-notification" class="btn btn-small btn-outline">Test</button>
+                    </div>
+
+                    <div class="routine-status" id="routine-status"></div>
+                </div>
+
+                <!-- Study Tab -->
+                <div id="study-tab" class="tab-content">
+                    <h3>Study Time Blocks</h3>
+                    <p class="help-text">Schedule recurring study sessions for your courses.</p>
+
+                    <div class="form-group">
+                        <label for="study-course">Course</label>
+                        <select id="study-course">
+                            <option value="MAT 302">MAT 302 - Discrete Math</option>
+                            <option value="DST 234">DST 234 - Data Science</option>
+                            <option value="MAT 146">MAT 146 - Calculus II</option>
+                            <option value="General">General Study</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Days</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="study-mon"> Mon</label>
+                            <label><input type="checkbox" id="study-tue"> Tue</label>
+                            <label><input type="checkbox" id="study-wed"> Wed</label>
+                            <label><input type="checkbox" id="study-thu"> Thu</label>
+                            <label><input type="checkbox" id="study-fri"> Fri</label>
+                            <label><input type="checkbox" id="study-sat"> Sat</label>
+                            <label><input type="checkbox" id="study-sun"> Sun</label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="study-start">Start Time</label>
+                            <input type="time" id="study-start" value="15:00">
+                        </div>
+                        <div class="form-group">
+                            <label for="study-end">End Time</label>
+                            <input type="time" id="study-end" value="17:00">
+                        </div>
+                    </div>
+
+                    <button id="add-study-block" class="btn btn-primary">Add Study Block</button>
+
+                    <div class="study-blocks-list">
+                        <h4>Current Study Blocks</h4>
+                        <div id="study-blocks"></div>
+                    </div>
+                </div>
+
+                <!-- Syllabus Tab -->
+                <div id="syllabus-tab" class="tab-content">
+                    <h3>Import Syllabus</h3>
+                    <p class="help-text">Paste your syllabus text below. The app will extract assignment names and due dates.</p>
+
+                    <div class="form-group">
+                        <label for="course-name">Course Name</label>
+                        <input type="text" id="course-name" placeholder="e.g., MAT 146 Calculus II">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="syllabus-text">Syllabus Text</label>
+                        <textarea id="syllabus-text" rows="8" placeholder="Paste syllabus schedule or assignment list here..."></textarea>
+                    </div>
+
+                    <button id="parse-syllabus" class="btn btn-primary">Extract Assignments</button>
+
+                    <div id="extracted-assignments" class="extracted-list hidden">
+                        <h4>Extracted Assignments</h4>
+                        <div id="assignment-preview"></div>
+                        <button id="confirm-assignments" class="btn btn-success">Add All to Calendar</button>
+                    </div>
+
+                    <div class="preloaded-section">
+                        <h4>Your Courses</h4>
+                        <p class="help-text">Based on your syllabi in /syllabus folder:</p>
+                        <button id="load-mat302" class="btn btn-outline">Load MAT 302 Schedule</button>
+                        <button id="load-dst234" class="btn btn-outline">Load DST 234 Schedule</button>
+                        <button id="load-mat146" class="btn btn-outline">Load MAT 146 Schedule</button>
+                    </div>
+                </div>
+
+                <!-- Projects Tab -->
+                <div id="projects-tab" class="tab-content">
+                    <h3>Add Work Project</h3>
+
+                    <div class="form-group">
+                        <label for="project-name">Project Name</label>
+                        <input type="text" id="project-name" placeholder="e.g., Quarterly Report">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-date">Due Date</label>
+                        <input type="date" id="project-date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-time">Time (optional)</label>
+                        <input type="time" id="project-time">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-priority">Priority</label>
+                        <select id="project-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project-notes">Notes (optional)</label>
+                        <textarea id="project-notes" rows="3" placeholder="Additional details..."></textarea>
+                    </div>
+
+                    <button id="add-project" class="btn btn-primary">Add Project</button>
+                </div>
+
+                <!-- Upcoming Tab -->
+                <div id="upcoming-tab" class="tab-content">
+                    <h3>Upcoming Deadlines</h3>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="assignment">Assignments</button>
+                        <button class="filter-btn" data-filter="project">Projects</button>
+                        <button class="filter-btn" data-filter="quiz">Quizzes</button>
+                    </div>
+                    <div id="upcoming-list" class="upcoming-list">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Morning Briefing Modal -->
+        <div id="briefing-modal" class="modal hidden">
+            <div class="modal-content briefing-content">
+                <span class="close-modal" data-modal="briefing-modal">&times;</span>
+                <h2>Good Morning!</h2>
+                <p id="briefing-date" class="briefing-date"></p>
+
+                <div class="briefing-section">
+                    <h3>Today's Schedule</h3>
+                    <div id="briefing-schedule"></div>
+                </div>
+
+                <div class="briefing-section">
+                    <h3>Priority Focus</h3>
+                    <div id="briefing-focus"></div>
+                </div>
+
+                <div class="briefing-section">
+                    <h3>Upcoming This Week</h3>
+                    <div id="briefing-week"></div>
+                </div>
+
+                <button id="close-briefing" class="btn btn-primary">Let's Go!</button>
+            </div>
+        </div>
+
+        <!-- Quick Add Modal -->
+        <div id="quick-add-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-modal" data-modal="quick-add-modal">&times;</span>
+                <h3>Quick Add Task</h3>
+                <div class="form-group">
+                    <label for="quick-task-name">Task Name</label>
+                    <input type="text" id="quick-task-name">
+                </div>
+                <div class="form-group">
+                    <label for="quick-task-type">Type</label>
+                    <select id="quick-task-type">
+                        <option value="assignment">Assignment</option>
+                        <option value="project">Project</option>
+                        <option value="quiz">Quiz/Exam</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button id="quick-add-save" class="btn btn-primary">Add Task</button>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
